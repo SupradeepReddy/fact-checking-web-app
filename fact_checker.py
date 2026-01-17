@@ -1,7 +1,8 @@
 import streamlit as st
 from serpapi import GoogleSearch
-from langchain_huggingface import HuggingFaceEndpoint
-from langchain_core.prompts import PromptTemplate
+from langchain_huggingface import ChatHuggingFace
+from langchain_core.messages import HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 
 SERPAPI_API_KEY = st.secrets.get("SERPAPI_API_KEY")
 HF_API_TOKEN = st.secrets.get("HF_API_TOKEN")
@@ -9,29 +10,29 @@ HF_API_TOKEN = st.secrets.get("HF_API_TOKEN")
 if not SERPAPI_API_KEY or not HF_API_TOKEN:
     raise ValueError("Missing API keys in Streamlit secrets")
 
-llm = HuggingFaceEndpoint(
+llm = ChatHuggingFace(
     repo_id="HuggingFaceH4/zephyr-7b-beta",
-    task="text-generation",
     huggingfacehub_api_token=HF_API_TOKEN,
     temperature=0
 )
 
-verification_prompt = PromptTemplate.from_template(
-    """
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a fact-checking assistant."),
+    ("human", """
 Claim:
 {claim}
 
 Web Evidence:
 {evidence}
 
-Based on the evidence, classify the claim as ONE of:
+Classify the claim as ONE of:
 - Verified
 - Inaccurate
 - False
 
-Give a short explanation.
-"""
-)
+Then give a short explanation.
+""")
+])
 
 def verify_claim(claim: str):
     search = GoogleSearch({
@@ -46,8 +47,10 @@ def verify_claim(claim: str):
     for r in results.get("organic_results", []):
         evidence += r.get("snippet", "") + "\n"
 
-    chain = verification_prompt | llm
-    return chain.invoke({
-        "claim": claim,
-        "evidence": evidence
-    })
+    messages = prompt.format_messages(
+        claim=claim,
+        evidence=evidence
+    )
+
+    response = llm.invoke(messages)
+    return response.content
