@@ -1,14 +1,13 @@
 import streamlit as st
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-# Get OpenAI key
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY not found in Streamlit secrets")
+GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    raise ValueError("GROQ_API_KEY not found in Streamlit secrets")
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
+llm = ChatGroq(
+    model="llama3-70b-8192",
     temperature=0
 )
 

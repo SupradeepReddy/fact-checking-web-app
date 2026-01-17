@@ -1,16 +1,16 @@
 import streamlit as st
 from serpapi import GoogleSearch
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")
+GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
 SERPAPI_API_KEY = st.secrets.get("SERPAPI_API_KEY")
 
-if not OPENAI_API_KEY or not SERPAPI_API_KEY:
-    raise ValueError("Missing OPENAI_API_KEY or SERPAPI_API_KEY in Streamlit secrets")
+if not GROQ_API_KEY or not SERPAPI_API_KEY:
+    raise ValueError("Missing GROQ_API_KEY or SERPAPI_API_KEY in Streamlit secrets")
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
+llm = ChatGroq(
+    model="llama3-70b-8192",
     temperature=0
 )
 
