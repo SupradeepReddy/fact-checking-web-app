@@ -3,5 +3,5 @@ pymupdf
 langchain
 langchain-core
 langchain-community
-langchain-huggingface
+langchain-openai
 google-search-results

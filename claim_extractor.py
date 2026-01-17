@@ -1,15 +1,14 @@
 import streamlit as st
-from langchain_huggingface import ChatHuggingFace
-from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
-HF_API_TOKEN = st.secrets.get("HF_API_TOKEN")
-if not HF_API_TOKEN:
-    raise ValueError("HF_API_TOKEN not found in Streamlit secrets")
+# Get OpenAI key
+OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY not found in Streamlit secrets")
 
-llm = ChatHuggingFace(
-    repo_id="HuggingFaceH4/zephyr-7b-beta",
-    huggingfacehub_api_token=HF_API_TOKEN,
+llm = ChatOpenAI(
+    model="gpt-4o-mini",
     temperature=0
 )
 
