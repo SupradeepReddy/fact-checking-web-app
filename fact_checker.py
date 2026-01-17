@@ -1,23 +1,30 @@
 import streamlit as st
 from serpapi import GoogleSearch
-from langchain_community.llms import Ollama
+from langchain_huggingface import HuggingFaceEndpoint
 from langchain_core.prompts import PromptTemplate
 
 SERPAPI_API_KEY = st.secrets.get("SERPAPI_API_KEY")
-if not SERPAPI_API_KEY:
-    raise ValueError("SERPAPI_API_KEY not found in Streamlit secrets.")
+HF_API_TOKEN = st.secrets.get("HF_API_TOKEN")
 
-llm = Ollama(model="llama3")
+if not SERPAPI_API_KEY or not HF_API_TOKEN:
+    raise ValueError("Missing API keys in Streamlit secrets")
+
+llm = HuggingFaceEndpoint(
+    repo_id="HuggingFaceH4/zephyr-7b-beta",
+    task="text-generation",
+    huggingfacehub_api_token=HF_API_TOKEN,
+    temperature=0
+)
 
 verification_prompt = PromptTemplate.from_template(
     """
 Claim:
 {claim}
 
-Web Search Evidence:
+Web Evidence:
 {evidence}
 
-Classify the claim as:
+Based on the evidence, classify the claim as ONE of:
 - Verified
 - Inaccurate
 - False

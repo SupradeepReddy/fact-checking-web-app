@@ -2,14 +2,13 @@ import streamlit as st
 from langchain_huggingface import HuggingFaceEndpoint
 from langchain_core.prompts import PromptTemplate
 
-# Get Hugging Face token
 HF_API_TOKEN = st.secrets.get("HF_API_TOKEN")
 if not HF_API_TOKEN:
-    raise ValueError("HF_API_TOKEN not found in Streamlit secrets.")
+    raise ValueError("HF_API_TOKEN not found in Streamlit secrets")
 
-# Hugging Face LLM
 llm = HuggingFaceEndpoint(
-    repo_id="mistralai/Mistral-7B-Instruct-v0.2",
+    repo_id="HuggingFaceH4/zephyr-7b-beta",
+    task="text-generation",
     huggingfacehub_api_token=HF_API_TOKEN,
     temperature=0
 )
