@@ -1,0 +1,7 @@
+streamlit
+pymupdf
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+google-search-results
