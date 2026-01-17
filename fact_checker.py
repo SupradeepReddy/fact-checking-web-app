@@ -10,6 +10,7 @@ if not GROQ_API_KEY or not SERPAPI_API_KEY:
     raise ValueError("Missing GROQ_API_KEY or SERPAPI_API_KEY in Streamlit secrets")
 
 llm = ChatGroq(
+    api_key=GROQ_API_KEY,   # 👈 EXPLICITLY PASS KEY
     model="llama3-70b-8192",
     temperature=0
 )
