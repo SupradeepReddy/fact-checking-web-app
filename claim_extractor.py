@@ -1,38 +1,21 @@
-import streamlit as st
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+import re
 
-GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
-if not GROQ_API_KEY:
-    raise ValueError("GROQ_API_KEY not found in Streamlit secrets")
+def extract_claims(text):
+    claims = []
 
-llm = ChatGroq(
-    api_key=GROQ_API_KEY,   # 👈 EXPLICITLY PASS KEY
-    model="llama3-70b-8192",
-    temperature=0
-)
+    patterns = [
+        r"\b\d{4}\b",                           # years
+        r"\$\d+(\.\d+)?\s?(billion|million)?", # money
+        r"\b\d+(\.\d+)?%\b",                    # percentages
+        r"\b(released|launched|announced)\b.*",# releases
+    ]
 
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You extract factual claims from documents."),
-    ("human", """
-Extract factual claims from the text below.
+    sentences = re.split(r'(?<=[.!?])\s+', text)
 
-Only include:
-- Dates
-- Statistics
-- Financial figures
-- Model releases
-- Technology or policy claims
+    for sentence in sentences:
+        for pattern in patterns:
+            if re.search(pattern, sentence, re.IGNORECASE):
+                claims.append(sentence.strip())
+                break
 
-Return a numbered list.
-Do NOT add explanations.
-
-TEXT:
-{text}
-""")
-])
-
-def extract_claims(text: str):
-    messages = prompt.format_messages(text=text)
-    response = llm.invoke(messages)
-    return [line for line in response.content.split("\n") if line.strip()]
+    return claims[:15]  # limit for performance

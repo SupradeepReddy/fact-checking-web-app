@@ -1,7 +1,3 @@
 streamlit
 pymupdf
-langchain
-langchain-core
-langchain-community
-langchain-groq
-google-search-results
+duckduckgo-search

@@ -1,17 +1,15 @@
-from langchain_groq import ChatGroq
-import streamlit as st
+from duckduckgo_search import DDGS
 
-GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
+def verify_claim(claim):
+    with DDGS() as ddgs:
+        results = list(ddgs.text(claim, max_results=5))
 
-llm = ChatGroq(
-    api_key=GROQ_API_KEY,
-    model="llama3-70b-8192",
-    temperature=0
-)
+    if not results:
+        return "❌ Unverified", "No reliable sources found."
 
-def verify_claim(claim: str):
-    # 🚫 SERPAPI DISABLED
-    response = llm.invoke(
-        f"Classify this claim as Verified, Inaccurate, or False:\n{claim}"
-    )
-    return response.content
+    evidence = " ".join(r["body"] for r in results)
+
+    if any(word in evidence.lower() for word in ["confirmed", "according to", "reported"]):
+        return "✅ Verified", "Multiple sources support this claim."
+
+    return "⚠️ Inconclusive", "Some mentions found, but not clearly verified."
